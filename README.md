@@ -1,5 +1,8 @@
 XBMCnfoMoviesImporter.bundle-for-Plex
 =====================================
+### Forked:
+The original plugin was modified to support Infuse's XML files
+
 ### Installation:
 It is recommended to install the [WebTools plugin](http://forums.plex.tv/discussion/288191/webtools-unsupported-appstore/p1).
 
