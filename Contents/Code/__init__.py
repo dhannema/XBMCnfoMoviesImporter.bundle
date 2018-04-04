@@ -397,11 +397,8 @@ class XBMCNFO(PlexAgent):
                 content_rating = {}
                 mpaa_rating = ''
                 try:
-                    mpaa_text = nfo_xml.xpath('./mpaa')[0].text.strip()
-                    match = RATING_REGEX_1.match(mpaa_text)
-                    if match.group('mpaa'):
-                        mpaa_rating = match.group('mpaa')
-                        log.debug('MPAA Rating: ' + mpaa_rating)
+                    mpaa_rating = nfo_xml.xpath('rating')[0].text.strip()
+                    log.debug('MPAA Rating: ' + mpaa_rating)
                 except:
                     pass
                 try:
@@ -518,12 +515,12 @@ class XBMCNFO(PlexAgent):
                 # Summary (Outline/Plot)
                 try:
                     if preferences['plot']:
-                        log.debug('User setting forces plot before outline...')
+                        log.debug('User setting forces plot before description...')
                         s_type_1 = 'plot'
-                        s_type_2 = 'outline'
+                        s_type_2 = 'description'
                     else:
-                        log.debug('Default setting forces outline before plot...')
-                        s_type_1 = 'outline'
+                        log.debug('Default setting forces description before plot...')
+                        s_type_1 = 'description'
                         s_type_2 = 'plot'
                     try:
                         summary = nfo_xml.xpath(s_type_1)[0].text.strip('| \t\r\n')
@@ -541,7 +538,7 @@ class XBMCNFO(PlexAgent):
                 # Ratings
                 nfo_rating = None
                 try:
-                    nfo_rating = round(float(nfo_xml.xpath('rating')[0].text.replace(',', '.')), 1)
+                    nfo_rating = round(float(nfo_xml.xpath('stars')[0].text.replace(',', '.')), 1)
                     log.debug('Movie Rating found: ' + str(nfo_rating))
                 except:
                     pass
