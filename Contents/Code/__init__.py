@@ -120,28 +120,22 @@ class XBMCNFO(PlexAgent):
         movie_name = get_movie_name_from_folder(folder_path, False)
 
         nfo_names = [
-            # Eden / Frodo
-            get_related_file(path1, '.nfo'),
-            '{movie}.nfo'.format(movie=movie_name_with_year),
-            '{movie}.nfo'.format(movie=movie_name),
-            # VIDEO_TS
-            os.path.join(folder_path, 'video_ts.nfo'),
-            # movie.nfo (e.g. FilmInfo!Organizer users)
-            os.path.join(folder_path, 'movie.nfo'),
+            # Infuse
+            get_related_file(path1, '.xml')
         ]
 
         # last resort - use first found .nfo
-        nfo_files = (f for f in os.listdir(folder_path) if f.endswith('.nfo'))
+        nfo_files = (f for f in os.listdir(folder_path) if f.endswith('.xml'))
 
         try:
             first_nfo = nfo_files.next()
         except StopIteration:
-            log.debug('No NFO found in {path!r}'.format(path=folder_path))
+            log.debug('No XML found in {path!r}'.format(path=folder_path))
         else:
             nfo_names.append(os.path.join(folder_path, first_nfo))
 
         # check possible .nfo file locations
-        nfo_file = check_file_paths(nfo_names, '.nfo')
+        nfo_file = check_file_paths(nfo_names, '.xml')
 
         if nfo_file:
             nfo_text = load_file(nfo_file)
@@ -149,19 +143,19 @@ class XBMCNFO(PlexAgent):
             # them. This may need to go farther than just &'s....
             nfo_text = NFO_TEXT_REGEX_1.sub('&amp;', nfo_text)
             # remove empty xml tags from nfo
-            log.debug('Removing empty XML tags from movies nfo...')
+            log.debug('Removing empty XML tags from movies xml...')
             nfo_text = NFO_TEXT_REGEX_2.sub('', nfo_text)
 
             nfo_text_lower = nfo_text.lower()
-            if nfo_text_lower.count('<movie') > 0 and nfo_text_lower.count('</movie>') > 0:
+            if nfo_text_lower.count('<media') > 0 and nfo_text_lower.count('</media>') > 0:
                 # Remove URLs (or other stuff) at the end of the XML file
-                nfo_text = '{content}</movie>'.format(
-                    content=nfo_text.rsplit('</movie>', 1)[0]
+                nfo_text = '{content}</media>'.format(
+                    content=nfo_text.rsplit('</media>', 1)[0]
                 )
 
-                # likely an xbmc nfo file
+                # likely an Infuse XML file
                 try:
-                    nfo_xml = element_from_string(nfo_text).xpath('//movie')[0]
+                    nfo_xml = element_from_string(nfo_text).xpath('//media')[0]
                 except:
                     log.debug('ERROR: Cant parse XML in {nfo}.'
                               ' Aborting!'.format(nfo=nfo_file))
@@ -209,7 +203,7 @@ class XBMCNFO(PlexAgent):
 
                 results.Append(Metadata(id=media.id, name=media.name, year=media.year, lang=lang, score=100))
                 try:
-                    log.info('Found movie information in NFO file:'
+                    log.info('Found movie information in XML file:'
                              ' title = {nfo.name},'
                              ' year = {nfo.year},'
                              ' id = {nfo.id}'.format(nfo=media))
@@ -324,28 +318,22 @@ class XBMCNFO(PlexAgent):
                 metadata.art[fanart_filename] = MediaProxy(fanart_data)
 
         nfo_names = [
-            # Eden / Frodo
-            get_related_file(path1, '.nfo'),
-            '{movie}.nfo'.format(movie=movie_name_with_year),
-            '{movie}.nfo'.format(movie=movie_name),
-            # VIDEO_TS
-            os.path.join(folder_path, 'video_ts.nfo'),
-            # movie.nfo (e.g. FilmInfo!Organizer users)
-            os.path.join(folder_path, 'movie.nfo'),
+            # Infuse
+            get_related_file(path1, '.xml')
         ]
 
         # last resort - use first found .nfo
-        nfo_files = (f for f in os.listdir(folder_path) if f.endswith('.nfo'))
+        nfo_files = (f for f in os.listdir(folder_path) if f.endswith('.xml'))
 
         try:
             first_nfo = nfo_files.next()
         except StopIteration:
-            log.debug('No NFO file found in {path!r}'.format(path=folder_path))
+            log.debug('No XML file found in {path!r}'.format(path=folder_path))
         else:
             nfo_names.append(os.path.join(folder_path, first_nfo))
 
-        # check possible .nfo file locations
-        nfo_file = check_file_paths(nfo_names, '.nfo')
+        # check possible .xml file locations
+        nfo_file = check_file_paths(nfo_names, '.xml')
 
         if nfo_file:
             nfo_text = load_file(nfo_file)
@@ -360,22 +348,22 @@ class XBMCNFO(PlexAgent):
 
             nfo_text_lower = nfo_text.lower()
 
-            if nfo_text_lower.count('<movie') > 0 and nfo_text_lower.count('</movie>') > 0:
+            if nfo_text_lower.count('<media') > 0 and nfo_text_lower.count('</media>') > 0:
                 # Remove URLs (or other stuff) at the end of the XML file
-                nfo_text = '{content}</movie>'.format(
-                    content=nfo_text.rsplit('</movie>', 1)[0]
+                nfo_text = '{content}</media>'.format(
+                    content=nfo_text.rsplit('</media>', 1)[0]
                 )
 
-                # likely an xbmc nfo file
+                # likely an Infuse XML file
                 try:
-                    nfo_xml = element_from_string(nfo_text).xpath('//movie')[0]
+                    nfo_xml = element_from_string(nfo_text).xpath('//media')[0]
                 except:
                     log.debug('ERROR: Cant parse XML in {nfo}.'
                               ' Aborting!'.format(nfo=nfo_file))
                     return
 
                 # remove empty xml tags
-                log.debug('Removing empty XML tags from movies nfo...')
+                log.debug('Removing empty XML tags from movies xml...')
                 nfo_xml = remove_empty_tags(nfo_xml)
 
                 # Title
@@ -467,11 +455,11 @@ class XBMCNFO(PlexAgent):
                 release_date = None
                 try:
                     try:
-                        log.debug('Reading releasedate tag...')
-                        release_string = nfo_xml.xpath('releasedate')[0].text.strip()
-                        log.debug('Releasedate tag is: {value}'.format(value=release_string))
+                        log.debug('Reading published tag...')
+                        release_string = nfo_xml.xpath('published')[0].text.strip()
+                        log.debug('Published tag is: {value}'.format(value=release_string))
                     except:
-                        log.debug('No releasedate tag found...')
+                        log.debug('No published tag found...')
                         pass
                     if not release_string:
                         try:
@@ -708,10 +696,10 @@ class XBMCNFO(PlexAgent):
                 # Actors
                 rroles = []
                 metadata.roles.clear()
-                for n, actor in enumerate(nfo_xml.xpath('actor')):
+                for n, actor in enumerate(nfo_xml.xpath('cast')[0].xpath('name')):
                     newrole = metadata.roles.new()
                     try:
-                        newrole.name = actor.xpath('name')[0].text
+                        newrole.name = actor.text
                     except:
                         newrole.name = 'Unknown Name ' + str(n)
                         pass
