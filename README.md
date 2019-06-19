@@ -1,3 +1,7 @@
+This branch has the following updates:
+1. Changed to support only Infuse XML files
+
+
 XBMCnfoMoviesImporter.bundle-for-Plex
 =====================================
 ### Installation:
